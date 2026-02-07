@@ -155,3 +155,20 @@ The production-ready files will be in the `dist/` directory.
 ## License
 
 MIT
+
+# Advanced Tracking System – Frontend
+
+## Project Overview
+This project is the frontend of the Advanced Tracking System, built using modern web technologies.
+
+## Use Case Diagrams
+
+### User Authentication
+![Authentication Use Case](docs/diagrams/UseCaseDiagram1.png)
+
+### Class Diagram
+![Class Diagram](docs/diagrams/class_diagram.png)
+
+### Sequence Diagram
+![Sequence Diagram](docs/diagrams/sequence_diagram.png)
+
