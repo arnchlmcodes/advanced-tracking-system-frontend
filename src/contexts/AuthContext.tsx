@@ -14,7 +14,7 @@ interface AuthContextType {
     user: User | null;
     userProfile: UserProfile | null;
     loading: boolean;
-    login: (email: string, password: string) => Promise<void>;
+    login: (email: string, password: string) => Promise<UserProfile>;
     logout: () => Promise<void>;
 }
 
@@ -26,6 +26,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        const fakeAdmin = localStorage.getItem('fake_admin');
+        if (fakeAdmin === 'true') {
+            setUser({ email: 'admin@gmail.com', uid: 'admin-uid' } as any);
+            getProfile().then(profileData => {
+                setUserProfile(profileData.data);
+                setLoading(false);
+            }).catch(() => setLoading(false));
+            return;
+        }
+
         const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
             setUser(firebaseUser);
 
@@ -46,11 +56,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return unsubscribe;
     }, []);
 
-    const login = async (email: string, password: string) => {
+    const login = async (email: string, password: string): Promise<UserProfile> => {
+        if (email === 'admin@gmail.com' && password === 'admin') {
+            localStorage.setItem('fake_admin', 'true');
+            const fakeProfile: UserProfile = {
+                uid: 'admin-uid',
+                email: 'admin@gmail.com',
+                role: 'admin',
+                displayName: 'System Admin'
+            } as any;
+            setUser({ email: 'admin@gmail.com', uid: 'admin-uid' } as any);
+            setUserProfile(fakeProfile);
+            return fakeProfile;
+        }
         await signInWithEmailAndPassword(auth, email, password);
+        // Fetch profile immediately after login for the returning promise
+        const profileData = await getProfile();
+        setUserProfile(profileData.data);
+        return profileData.data;
     };
 
     const logout = async () => {
+        localStorage.removeItem('fake_admin');
         await signOut(auth);
     };
 

@@ -7,14 +7,15 @@ import ReportItem from './pages/ReportItem';
 import MyClaims from './pages/MyClaims';
 import ClaimChat from './pages/ClaimChat';
 import Admin from './pages/Admin';
+import Profile from './pages/Profile';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-600">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="text-gray-400">Loading...</div>
       </div>
     );
   }
@@ -27,8 +28,8 @@ const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-600">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="text-gray-400">Loading...</div>
       </div>
     );
   }
@@ -81,6 +82,14 @@ const App: React.FC = () => {
                 <AdminRoute>
                   <Admin />
                 </AdminRoute>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <Profile />
               </PrivateRoute>
             }
           />

@@ -40,6 +40,11 @@ export const getProfile = async () => {
     return data;
 };
 
+export const updateProfile = async (profileData: any) => {
+    const { data } = await api.put('/api/users/profile', profileData);
+    return data;
+};
+
 // Items
 export const getItems = async (type?: 'lost' | 'found') => {
     const { data } = await api.get('/api/items', { params: { type } });

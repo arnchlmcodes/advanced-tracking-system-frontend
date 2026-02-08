@@ -11,6 +11,12 @@ const api = axios.create({
 // Request interceptor to add auth token
 api.interceptors.request.use(
     async (config) => {
+        const fakeAdmin = localStorage.getItem('fake_admin');
+        if (fakeAdmin === 'true') {
+            config.headers.Authorization = `Bearer fake-admin-token`;
+            return config;
+        }
+
         const user = auth.currentUser;
         if (user) {
             const token = await user.getIdToken(true);

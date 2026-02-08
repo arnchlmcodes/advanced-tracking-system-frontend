@@ -63,48 +63,55 @@ const ClaimChat: React.FC = () => {
             <div className="max-w-4xl mx-auto">
                 <button
                     onClick={() => navigate('/my-claims')}
-                    className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 mb-4"
+                    className="flex items-center space-x-2 text-gray-400 hover:text-white mb-4 font-medium text-sm"
                 >
-                    <ArrowLeft className="w-5 h-5" />
+                    <ArrowLeft className="w-4 h-4" />
                     <span>Back to My Claims</span>
                 </button>
 
-                <div className="bg-white rounded-lg shadow">
-                    <div className="border-b p-4">
-                        <h2 className="text-xl font-semibold text-gray-900">Claim Chat</h2>
-                        <p className="text-sm text-gray-600">Communicate with admin about your claim</p>
+                <div className="bg-gray-900 rounded-xl border border-gray-800">
+                    <div className="border-b border-gray-800 p-5">
+                        <h2 className="text-xl font-semibold text-white">Claim Chat</h2>
+                        <p className="text-sm text-gray-400 mt-1">Communicate with admin about your claim</p>
                     </div>
 
-                    <div className="h-96 overflow-y-auto p-4 space-y-4">
+                    <div className="h-96 overflow-y-auto p-5 space-y-4">
                         {loading ? (
-                            <div className="text-center py-12 text-gray-500">Loading messages...</div>
+                            <div className="text-center py-12 text-gray-400">Loading messages...</div>
                         ) : messages.length === 0 ? (
-                            <div className="text-center py-12 text-gray-500">No messages yet</div>
+                            <div className="text-center py-12 text-gray-400">No messages yet</div>
                         ) : (
-                            messages.map((message) => {
-                                const isOwnMessage = message.senderId === user?.uid;
+                            messages.map((message: any) => {
+                                const senderId = message.senderId || message.senderUid;
+                                const isOwnMessage = senderId === user?.uid;
+                                const timestamp = message.timestamp
+                                    ? (typeof message.timestamp === 'object' && '_seconds' in message.timestamp)
+                                        ? new Date(message.timestamp._seconds * 1000)
+                                        : new Date(message.timestamp)
+                                    : new Date();
+
                                 return (
                                     <div
                                         key={message.id}
                                         className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
                                     >
                                         <div
-                                            className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${isOwnMessage
-                                                    ? 'bg-indigo-600 text-white'
+                                            className={`max-w-xs lg:max-w-md px-4 py-2.5 rounded-lg ${isOwnMessage
+                                                    ? 'bg-white text-black'
                                                     : message.isProofRequest
-                                                        ? 'bg-yellow-100 text-yellow-900 border border-yellow-300'
-                                                        : 'bg-gray-100 text-gray-900'
+                                                        ? 'bg-yellow-900/30 text-yellow-300 border border-yellow-800'
+                                                        : 'bg-gray-800 text-white'
                                                 }`}
                                         >
                                             {!isOwnMessage && (
-                                                <p className="text-xs font-semibold mb-1">{message.senderName}</p>
+                                                <p className="text-xs font-semibold mb-1.5">{message.senderName || 'Admin'}</p>
                                             )}
                                             {message.isProofRequest && (
-                                                <p className="text-xs font-semibold mb-1">⚠️ Proof Request</p>
+                                                <p className="text-xs font-semibold mb-1.5">⚠️ Proof Request</p>
                                             )}
-                                            <p className="text-sm">{message.content}</p>
-                                            <p className={`text-xs mt-1 ${isOwnMessage ? 'text-indigo-200' : 'text-gray-500'}`}>
-                                                {new Date(message.timestamp).toLocaleTimeString()}
+                                            <p className="text-sm leading-relaxed">{message.content}</p>
+                                            <p className={`text-xs mt-1.5 ${isOwnMessage ? 'text-gray-600' : 'text-gray-400'}`}>
+                                                {timestamp.toLocaleTimeString()}
                                             </p>
                                         </div>
                                     </div>
@@ -114,19 +121,19 @@ const ClaimChat: React.FC = () => {
                         <div ref={messagesEndRef} />
                     </div>
 
-                    <form onSubmit={handleSend} className="border-t p-4">
+                    <form onSubmit={handleSend} className="border-t border-gray-800 p-5">
                         <div className="flex space-x-2">
                             <input
                                 type="text"
                                 value={newMessage}
                                 onChange={(e) => setNewMessage(e.target.value)}
                                 placeholder="Type your message..."
-                                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                className="flex-1 px-4 py-2.5 bg-black border border-gray-700 rounded-lg focus:ring-2 focus:ring-white focus:border-white outline-none text-sm text-white placeholder-gray-500"
                             />
                             <button
                                 type="submit"
                                 disabled={sending || !newMessage.trim()}
-                                className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="bg-white text-black px-4 py-2.5 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <Send className="w-5 h-5" />
                             </button>
