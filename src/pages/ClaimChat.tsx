@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useState, useEffect,useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getClaimChat, sendChatMessage, ChatMessage } from '../api/services';
-import { Send, ArrowLeft } from 'lucide-react';
+import { Send, ArrowLeft, Info, AlertCircle, User } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Layout from '../components/Layout';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -18,14 +19,12 @@ const ClaimChat: React.FC = () => {
     useEffect(() => {
         if (claimId) {
             fetchMessages();
-            const interval = setInterval(fetchMessages, 5000); // Poll every 5 seconds
+            const interval = setInterval(fetchMessages, 5000);
             return () => clearInterval(interval);
         }
     }, [claimId]);
 
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
+    useEffect(() => { scrollToBottom(); }, [messages]);
 
     const fetchMessages = async () => {
         try {
@@ -45,7 +44,6 @@ const ClaimChat: React.FC = () => {
     const handleSend = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newMessage.trim() || sending) return;
-
         setSending(true);
         try {
             await sendChatMessage(claimId!, newMessage);
@@ -60,78 +58,129 @@ const ClaimChat: React.FC = () => {
 
     return (
         <Layout>
-            <div className="max-w-4xl mx-auto">
-                <button
-                    onClick={() => navigate('/my-claims')}
-                    className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 mb-4"
-                >
-                    <ArrowLeft className="w-5 h-5" />
-                    <span>Back to My Claims</span>
-                </button>
+            <div className="max-w-3xl mx-auto h-[calc(100vh-140px)] flex flex-col">
+                {/* Header Section */}
+                <div className="flex items-center justify-between mb-4 bg-white/50 p-2 rounded-2xl backdrop-blur-sm">
+                    <button
+                        onClick={() => navigate('/my-claims')}
+                        className="group flex items-center space-x-2 text-gray-500 hover:text-indigo-600 transition-colors px-3 py-2 rounded-xl hover:bg-white"
+                    >
+                        <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+                        <span className="font-medium">All Claims</span>
+                    </button>
+                    <div className="flex items-center gap-2 px-4 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-bold uppercase tracking-wider">
+                        <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" />
+                        Live Support
+                    </div>
+                </div>
 
-                <div className="bg-white rounded-lg shadow">
-                    <div className="border-b p-4">
-                        <h2 className="text-xl font-semibold text-gray-900">Claim Chat</h2>
-                        <p className="text-sm text-gray-600">Communicate with admin about your claim</p>
+                {/* Main Chat Container */}
+                <div className="flex-1 bg-white rounded-3xl shadow-xl shadow-indigo-100/50 border border-indigo-50 flex flex-col overflow-hidden">
+                    {/* Chat Header Info */}
+                    <div className="p-5 border-b border-gray-50 flex items-center gap-4 bg-gradient-to-r from-white to-indigo-50/30">
+                        <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200">
+                            <User className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <h2 className="text-lg font-bold text-gray-900 tracking-tight">Claim Assistant</h2>
+                            <p className="text-xs text-gray-500 flex items-center gap-1">
+                                <Info className="w-3 h-3" /> Usually responds in few hours
+                            </p>
+                        </div>
                     </div>
 
-                    <div className="h-96 overflow-y-auto p-4 space-y-4">
+                    {/* Messages Area */}
+                    <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin scrollbar-thumb-gray-200">
                         {loading ? (
-                            <div className="text-center py-12 text-gray-500">Loading messages...</div>
+                            <div className="flex flex-col items-center justify-center h-full space-y-4">
+                                <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+                                <p className="text-gray-400 text-sm animate-pulse">Syncing conversation...</p>
+                            </div>
                         ) : messages.length === 0 ? (
-                            <div className="text-center py-12 text-gray-500">No messages yet</div>
+                            <div className="text-center py-12 flex flex-col items-center">
+                                <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                                    <Send className="w-6 h-6 text-gray-300" />
+                                </div>
+                                <p className="text-gray-400 font-medium">No messages yet. Start the conversation!</p>
+                            </div>
                         ) : (
-                            messages.map((message) => {
-                                const isOwnMessage = message.senderId === user?.uid;
-                                return (
-                                    <div
-                                        key={message.id}
-                                        className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
-                                    >
-                                        <div
-                                            className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${isOwnMessage
-                                                    ? 'bg-indigo-600 text-white'
-                                                    : message.isProofRequest
-                                                        ? 'bg-yellow-100 text-yellow-900 border border-yellow-300'
-                                                        : 'bg-gray-100 text-gray-900'
-                                                }`}
+                            <AnimatePresence initial={false}>
+                                {messages.map((message) => {
+                                    const isOwnMessage = message.senderId === user?.uid;
+                                    return (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            key={message.id}
+                                            className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
                                         >
-                                            {!isOwnMessage && (
-                                                <p className="text-xs font-semibold mb-1">{message.senderName}</p>
-                                            )}
-                                            {message.isProofRequest && (
-                                                <p className="text-xs font-semibold mb-1">⚠️ Proof Request</p>
-                                            )}
-                                            <p className="text-sm">{message.content}</p>
-                                            <p className={`text-xs mt-1 ${isOwnMessage ? 'text-indigo-200' : 'text-gray-500'}`}>
-                                                {new Date(message.timestamp).toLocaleTimeString()}
-                                            </p>
-                                        </div>
-                                    </div>
-                                );
-                            })
+                                            <div className={`max-w-[85%] md:max-w-[70%] group`}>
+                                                {!isOwnMessage && (
+                                                    <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest ml-1 mb-1 block">
+                                                        {message.senderName}
+                                                    </span>
+                                                )}
+                                                
+                                                <div className={`relative px-4 py-3 rounded-2xl shadow-sm transition-all ${
+                                                    isOwnMessage
+                                                        ? 'bg-indigo-600 text-white rounded-br-none shadow-indigo-200'
+                                                        : message.isProofRequest
+                                                            ? 'bg-amber-50 text-amber-900 border border-amber-200 rounded-bl-none'
+                                                            : 'bg-gray-100 text-gray-800 rounded-bl-none'
+                                                }`}>
+                                                    {message.isProofRequest && (
+                                                        <div className="flex items-center gap-2 mb-2 pb-2 border-b border-amber-200/50 text-amber-700">
+                                                            <AlertCircle className="w-4 h-4" />
+                                                            <span className="text-xs font-bold uppercase tracking-tight">Action Required</span>
+                                                        </div>
+                                                    )}
+                                                    
+                                                    <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                                                    
+                                                    <p className={`text-[10px] mt-2 font-medium flex justify-end ${
+                                                        isOwnMessage ? 'text-indigo-200' : 'text-gray-400'
+                                                    }`}>
+                                                        {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    );
+                                })}
+                            </AnimatePresence>
                         )}
                         <div ref={messagesEndRef} />
                     </div>
 
-                    <form onSubmit={handleSend} className="border-t p-4">
-                        <div className="flex space-x-2">
+                    {/* Input Area */}
+                    <div className="p-4 bg-gray-50/50 border-t border-gray-100">
+                        <form 
+                            onSubmit={handleSend} 
+                            className="relative flex items-center bg-white rounded-2xl border border-gray-200 focus-within:border-indigo-400 focus-within:ring-4 focus-within:ring-indigo-50 transition-all p-1.5 shadow-inner"
+                        >
                             <input
                                 type="text"
                                 value={newMessage}
                                 onChange={(e) => setNewMessage(e.target.value)}
-                                placeholder="Type your message..."
-                                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                placeholder="Write a reply..."
+                                className="flex-1 px-4 py-2 bg-transparent outline-none text-gray-700 placeholder:text-gray-400"
                             />
                             <button
                                 type="submit"
                                 disabled={sending || !newMessage.trim()}
-                                className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="bg-indigo-600 hover:bg-indigo-700 text-white p-3 rounded-xl transition-all disabled:opacity-40 disabled:grayscale shadow-lg shadow-indigo-100 active:scale-95"
                             >
-                                <Send className="w-5 h-5" />
+                                {sending ? (
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                ) : (
+                                    <Send className="w-5 h-5" />
+                                )}
                             </button>
-                        </div>
-                    </form>
+                        </form>
+                        <p className="text-[10px] text-center text-gray-400 mt-3 italic">
+                            All messages are logged for security purposes.
+                        </p>
+                    </div>
                 </div>
             </div>
         </Layout>
