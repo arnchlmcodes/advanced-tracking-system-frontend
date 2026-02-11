@@ -1,11 +1,17 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 
-import Login from './pages/Login';
-import Home from './pages/Home';
-import ReportItem from './pages/ReportItem';
-import MyClaims from './pages/MyClaims';
-import ClaimChat from './pages/ClaimChat';
+/* Pages */
+import Login from "./pages/Login";
+import Home from "./pages/Home";
+import ReportItem from "./pages/ReportItem";
+import MyClaims from "./pages/MyClaims";
+import ClaimChat from "./pages/ClaimChat";
+import SuggestedMatches from "./pages/suggestedmatches";
+import SaleMarketplace from "./pages/salesmarketplace";
+import PurchaseResult from "./pages/purchaseResult";
+
+/* -------- PRIVATE ROUTE -------- */
 
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {
   const { user, loading } = useAuth();
@@ -14,14 +20,16 @@ const PrivateRoute = ({ children }: { children: JSX.Element }) => {
   return user ? children : <Navigate to="/login" />;
 };
 
+/* -------- APP -------- */
+
 function App() {
   return (
     <AuthProvider>
       <Routes>
-        {/* Public */}
+        {/* ---------- PUBLIC ---------- */}
         <Route path="/login" element={<Login />} />
 
-        {/* Protected */}
+        {/* ---------- PROTECTED ---------- */}
         <Route
           path="/"
           element={
@@ -36,6 +44,33 @@ function App() {
           element={
             <PrivateRoute>
               <ReportItem />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/suggested-matches"
+          element={
+            <PrivateRoute>
+              <SuggestedMatches />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/sales-marketplace"
+          element={
+            <PrivateRoute>
+              <SaleMarketplace />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/purchase-result/:itemId"
+          element={
+            <PrivateRoute>
+              <PurchaseResult />
             </PrivateRoute>
           }
         />
@@ -57,6 +92,9 @@ function App() {
             </PrivateRoute>
           }
         />
+
+        {/* ---------- FALLBACK ---------- */}
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </AuthProvider>
   );

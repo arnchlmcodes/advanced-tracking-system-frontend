@@ -1,4 +1,4 @@
-import { useState } from 'react';
+/*import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createItem, uploadItemImage } from '../api/services';
 import { Upload, X, MapPin, Tag, AlignLeft, CheckCircle2, AlertCircle } from 'lucide-react';
@@ -45,9 +45,9 @@ const ReportItem: React.FC = () => {
 
     return (
         <Layout>
-            <div className="max-w-3xl mx-auto pb-20">
+            <div className="max-w-3xl mx-auto pb-20">*/
                 {/* Header Section */}
-                <div className="mb-8 text-center">
+                /*<div className="mb-8 text-center">
                     <motion.h1 
                         initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
                         className="text-4xl font-black text-gray-900 tracking-tight"
@@ -57,9 +57,9 @@ const ReportItem: React.FC = () => {
                     <p className="text-gray-500 mt-2 font-medium">Help the community by providing accurate details.</p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6">*/
                     {/* --- TYPE SELECTION CARD --- */}
-                    <div className="grid grid-cols-2 gap-4">
+                   /* <div className="grid grid-cols-2 gap-4">
                         {['lost', 'found'].map((type) => (
                             <label 
                                 key={type}
@@ -87,15 +87,15 @@ const ReportItem: React.FC = () => {
                                 </span>
                             </label>
                         ))}
-                    </div>
+                    </div>*/
 
                     {/* --- MAIN FORM CARD --- */}
-                    <div className="bg-white rounded-[2.5rem] shadow-xl shadow-indigo-50/50 border border-gray-100 overflow-hidden">
+                    /*<div className="bg-white rounded-[2.5rem] shadow-xl shadow-indigo-50/50 border border-gray-100 overflow-hidden">
                         <div className={`h-2 w-full transition-colors duration-500 ${isLost ? 'bg-red-500' : 'bg-emerald-500'}`} />
                         
-                        <div className="p-8 md:p-10 space-y-8">
+                        <div className="p-8 md:p-10 space-y-8">*/
                             {/* Title Input */}
-                            <div className="space-y-2">
+                          /*  <div className="space-y-2">
                                 <label className="flex items-center gap-2 text-sm font-bold text-gray-700 uppercase tracking-wider ml-1">
                                     <Tag className="w-4 h-4 text-indigo-500" /> Item Name
                                 </label>
@@ -107,10 +107,10 @@ const ReportItem: React.FC = () => {
                                     className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-4 focus:ring-indigo-50 transition-all text-lg font-medium placeholder:text-gray-300"
                                     placeholder="e.g., iPhone 13 with a clear case"
                                 />
-                            </div>
+                            </div>*/
 
                             {/* Location Input */}
-                            <div className="space-y-2">
+                           /* <div className="space-y-2">
                                 <label className="flex items-center gap-2 text-sm font-bold text-gray-700 uppercase tracking-wider ml-1">
                                     <MapPin className="w-4 h-4 text-indigo-500" /> Where was it {formData.type}?
                                 </label>
@@ -122,10 +122,10 @@ const ReportItem: React.FC = () => {
                                     className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-4 focus:ring-indigo-50 transition-all text-lg font-medium placeholder:text-gray-300"
                                     placeholder="e.g., Cafeteria, North Table"
                                 />
-                            </div>
+                            </div>*/
 
                             {/* Description Input */}
-                            <div className="space-y-2">
+                            /*<div className="space-y-2">
                                 <label className="flex items-center gap-2 text-sm font-bold text-gray-700 uppercase tracking-wider ml-1">
                                     <AlignLeft className="w-4 h-4 text-indigo-500" /> Description
                                 </label>
@@ -137,10 +137,10 @@ const ReportItem: React.FC = () => {
                                     className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-4 focus:ring-indigo-50 transition-all text-lg font-medium placeholder:text-gray-300 resize-none"
                                     placeholder="Provide unique identifiers (stickers, scratches, serial numbers)..."
                                 />
-                            </div>
+                            </div>*/
 
                             {/* Image Upload Area */}
-                            <div className="space-y-2">
+                            /*<div className="space-y-2">
                                 <label className="flex items-center gap-2 text-sm font-bold text-gray-700 uppercase tracking-wider ml-1">
                                     Photo Evidence
                                 </label>
@@ -177,10 +177,10 @@ const ReportItem: React.FC = () => {
                                     </AnimatePresence>
                                 </div>
                             </div>
-                        </div>
+                        </div>*/
 
                         {/* --- ACTION BUTTONS --- */}
-                        <div className="bg-gray-50 p-8 flex flex-col md:flex-row gap-4">
+                       /* <div className="bg-gray-50 p-8 flex flex-col md:flex-row gap-4">
                             <button
                                 type="button"
                                 onClick={() => navigate('/')}
@@ -211,4 +211,308 @@ const ReportItem: React.FC = () => {
     );
 };
 
+export default ReportItem;*/
+
+
+
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { createItem, uploadItemImage } from '../api/services';
+import {
+  Upload,
+  X,
+  MapPin,
+  Tag,
+  AlignLeft,
+  CheckCircle2,
+  AlertCircle,
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import Layout from '../components/Layout';
+
+/* ---------------- TYPES ---------------- */
+
+type ItemType = 'lost' | 'found';
+
+interface FormData {
+  title: string;
+  type: ItemType;
+  location: string;
+  description: string;
+}
+
+/* ---------------- COMPONENT ---------------- */
+
+const ReportItem: React.FC = () => {
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState<FormData>({
+    title: '',
+    type: 'lost',
+    location: '',
+    description: '',
+  });
+
+  const [image, setImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const isLost = formData.type === 'lost';
+
+  /* ---------- IMAGE HANDLER ---------- */
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => setImage(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  /* ---------- SUBMIT ---------- */
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const response = await createItem(formData);
+      const itemId = response.data.id;
+
+      if (image) {
+        await uploadItemImage(itemId, image);
+      }
+
+      alert('Item reported successfully!');
+      navigate('/'); // back to dashboard
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to report item');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Layout>
+      <div className="max-w-3xl mx-auto pb-20">
+        {/* HEADER */}
+        <div className="mb-8 text-center">
+          <motion.h1
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-4xl font-black text-gray-900"
+          >
+            Report an Item
+          </motion.h1>
+          <p className="text-gray-500 mt-2">
+            Help the community by providing accurate details.
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* TYPE SELECT */}
+          <div className="grid grid-cols-2 gap-4">
+            {(['lost', 'found'] as ItemType[]).map((type) => (
+              <label
+                key={type}
+                className={`flex flex-col items-center justify-center p-6 rounded-3xl border-2 cursor-pointer transition ${
+                  formData.type === type
+                    ? type === 'lost'
+                      ? 'border-red-500 bg-red-50'
+                      : 'border-emerald-500 bg-emerald-50'
+                    : 'border-gray-100 bg-white'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="type"
+                  value={type}
+                  checked={formData.type === type}
+                  onChange={() =>
+                    setFormData({ ...formData, type })
+                  }
+                  className="hidden"
+                />
+                {type === 'lost' ? (
+                  <AlertCircle className="w-8 h-8 text-red-500" />
+                ) : (
+                  <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+                )}
+                <span className="mt-2 font-bold uppercase text-xs">
+                  I {type === 'lost' ? 'Lost' : 'Found'} Something
+                </span>
+              </label>
+            ))}
+          </div>
+
+          {/* FORM CARD */}
+          <div className="bg-white rounded-[2.5rem] shadow-xl border overflow-hidden">
+            <div
+              className={`h-2 ${
+                isLost ? 'bg-red-500' : 'bg-emerald-500'
+              }`}
+            />
+
+            <div className="p-8 space-y-6">
+              <InputField
+                label="Item Name"
+                icon={<Tag className="w-4 h-4" />}
+                value={formData.title}
+                placeholder="e.g. iPhone 13 with clear case"
+                onChange={(v) =>
+                  setFormData({ ...formData, title: v })
+                }
+              />
+
+              <InputField
+                label={`Where was it ${formData.type}?`}
+                icon={<MapPin className="w-4 h-4" />}
+                value={formData.location}
+                placeholder="e.g. Cafeteria North Table"
+                onChange={(v) =>
+                  setFormData({ ...formData, location: v })
+                }
+              />
+
+              <TextAreaField
+                label="Description"
+                icon={<AlignLeft className="w-4 h-4" />}
+                value={formData.description}
+                placeholder="Unique marks, serial numbers..."
+                onChange={(v) =>
+                  setFormData({ ...formData, description: v })
+                }
+              />
+
+              {/* IMAGE UPLOAD */}
+              <div>
+                <label className="font-bold mb-2 block">
+                  Photo Evidence
+                </label>
+
+                <div className="border-2 border-dashed rounded-2xl p-6">
+                  <AnimatePresence>
+                    {image ? (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="relative"
+                      >
+                        <img
+                          src={image}
+                          className="rounded-xl max-h-64 mx-auto"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setImage(null)}
+                          className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full"
+                        >
+                          <X />
+                        </button>
+                      </motion.div>
+                    ) : (
+                      <label className="cursor-pointer flex flex-col items-center">
+                        <Upload className="w-8 h-8 mb-2" />
+                        <span>Upload a photo</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                          className="hidden"
+                        />
+                      </label>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+            </div>
+
+            {/* ACTIONS */}
+            <div className="bg-gray-50 p-6 flex gap-4">
+              <button
+                type="button"
+                onClick={() => navigate('/')}
+                className="flex-1 text-gray-500 font-bold"
+              >
+                Discard
+              </button>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className={`flex-[2] py-4 rounded-2xl font-black text-white ${
+                  isLost
+                    ? 'bg-gray-900 hover:bg-red-600'
+                    : 'bg-gray-900 hover:bg-emerald-600'
+                }`}
+              >
+                {loading ? 'Submitting...' : 'Submit Report'}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </Layout>
+  );
+};
+
 export default ReportItem;
+
+/* ---------------- REUSABLE FIELDS ---------------- */
+
+const InputField = ({
+  label,
+  icon,
+  value,
+  placeholder,
+  onChange,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  value: string;
+  placeholder: string;
+  onChange: (value: string) => void;
+}) => (
+  <div>
+    <label className="flex items-center gap-2 font-bold mb-2">
+      {icon} {label}
+    </label>
+    <input
+      required
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      className="w-full p-4 bg-gray-50 rounded-xl"
+    />
+  </div>
+);
+
+const TextAreaField = ({
+  label,
+  icon,
+  value,
+  placeholder,
+  onChange,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  value: string;
+  placeholder: string;
+  onChange: (value: string) => void;
+}) => (
+  <div>
+    <label className="flex items-center gap-2 font-bold mb-2">
+      {icon} {label}
+    </label>
+    <textarea
+      required
+      rows={4}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      className="w-full p-4 bg-gray-50 rounded-xl resize-none"
+    />
+  </div>
+);
+
+
+
+     
